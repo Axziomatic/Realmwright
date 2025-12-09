@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-bg-main text-text-primary font-sans antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-heading text-text-primary;
+  }
+
+  p {
+    @apply text-text-secondary;
+  }
+
+  a {
+    @apply text-accent-highlight hover:text-accent-primary underline-offset-4;
+  }
+}
