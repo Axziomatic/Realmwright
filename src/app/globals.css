@@ -2,22 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   :root {
     color-scheme: dark;
   }
 
   body {
-    @apply bg-bg-main text-text-primary font-sans antialiased;
+    @apply bg-background-main text-foreground-primary font-sans antialiased;
   }
 
   h1, h2, h3, h4 {
-    @apply font-heading text-text-primary;
+    @apply font-heading text-foreground-primary;
   }
 
   p {
-    @apply text-text-secondary;
+    @apply text-foreground-secondary;
   }
 
   a {
