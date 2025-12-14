@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${outfit.variable} ${cinzel.variable}`}>
-      <body className="bg-bg-main text-text-primary font-sans">
+      <body className="bg-background-main text-foreground-primary font-sans antialiased">
         {children}
       </body>
     </html>
