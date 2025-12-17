@@ -64,13 +64,21 @@ export async function createWorld(formData: FormData): Promise<void> {
 
   const supabase = await createSupabaseServerClient();
 
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !authData.user) {
+    redirect("/login");
+  }
+
   const slug = slugify(parsed.data.name);
 
-  const { error } = await supabase.from("wrolds").insert({
+  const { error } = await supabase.from("worlds").insert({
     name: parsed.data.name,
     summary: parsed.data.summary,
     slug,
+    owner_id: authData.user.id,
   });
+
   if (error) {
     redirect(`/worlds?error=${encodeURIComponent(error.message)}`);
   }
