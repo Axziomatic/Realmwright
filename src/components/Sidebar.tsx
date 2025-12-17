@@ -14,18 +14,59 @@ import {
 import { useAppStore } from "@/store/appStore";
 
 const navItems = [
-  { href: "/worlds", label: "Worlds", icon: Shield },
-  { href: "/worlds/test-world/locations", label: "Locations", icon: MapPin },
-  { href: "/worlds/test-world/npcs", label: "NPCs", icon: Users },
-  { href: "/worlds/test-world/items", label: "Items", icon: Package },
-  { href: "/worlds/test-world/factions", label: "Factions", icon: Flag },
-  { href: "/worlds/test-world/gods", label: "Gods", icon: Sparkles },
+  {
+    key: "worlds",
+    label: "Worlds",
+    icon: Shield,
+    path: "/worlds",
+    worldScoped: false,
+  },
+  {
+    key: "locations",
+    label: "Locations",
+    icon: MapPin,
+    path: "/locations",
+    worldScoped: true,
+  },
+  { key: "npcs", label: "NPCs", icon: Users, path: "/npcs", worldScoped: true },
+  {
+    key: "items",
+    label: "Items",
+    icon: Package,
+    path: "/items",
+    worldScoped: true,
+  },
+  {
+    key: "factions",
+    label: "Factions",
+    icon: Flag,
+    path: "/factions",
+    worldScoped: true,
+  },
+  {
+    key: "gods",
+    label: "Gods",
+    icon: Sparkles,
+    path: "/gods",
+    worldScoped: true,
+  },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const sidebarOpen = useAppStore((s) => s.sidebarOpen);
   const setSidebarOpen = useAppStore((s) => s.setSidebarOpen);
+  const selectedWorld = useAppStore((s) => s.selectedWorld);
+  const worldId = selectedWorld?.id;
+  const worldDisabled = !worldId;
+
+  const buildHref = (item: (typeof navItems)[number]) => {
+    if (!item.worldScoped) return item.path;
+    return worldId ? `/worlds/${worldId}${item.path}` : "/worlds";
+  };
+
+  const worldHref = (path: string) =>
+    worldId ? `/worlds/${worldId}${path}` : "/worlds";
 
   if (!sidebarOpen) return null;
 
@@ -63,16 +104,49 @@ export default function Sidebar() {
           </button>
         </div>
 
+        {selectedWorld ? (
+          <div className="mt-4 rounded-2xl border border-border-secondary p-3 text-sm">
+            <div className="text-xs text-foreground-secondary">
+              Selected world
+            </div>
+            <div className="font-medium text-foreground-primary">
+              {selectedWorld.name}
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 rounded-2xl border border-border-secondary p-3 text-sm text-foreground-secondary">
+            Select a world to unlock world content
+          </div>
+        )}
+
         <nav className="mt-6">
           <ul className="space-y-2">
             {navItems.map((item) => {
-              const active = pathname === item.href;
               const Icon = item.icon;
+              const href = buildHref(item);
+              const disabled = item.worldScoped && worldDisabled;
+              const active = pathname === href;
+
+              if (disabled) {
+                return (
+                  <li key={item.key}>
+                    <button
+                      type="button"
+                      className="flex w-full cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-foreground-primary/40"
+                      aria-disabled="true"
+                      title="Select a world first"
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </button>
+                  </li>
+                );
+              }
 
               return (
-                <li key={item.href}>
+                <li key={item.key}>
                   <Link
-                    href={item.href}
+                    href={href}
                     onClick={() => setSidebarOpen(false)}
                     className={[
                       "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition",
