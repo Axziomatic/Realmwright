@@ -2,69 +2,66 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/supabaseServerClient";
-import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowserClient";
+import { loginSchema, signupSchema } from "@/lib/validators/auth";
 
 export async function signUp(formData: FormData): Promise<void> {
-  const username = String(formData.get("username") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "").trim();
-  const confirmPassword = String(formData.get("confirmPassword") ?? "").trim();
-  const acceptTerms = formData.get("acceptTerms") === "on";
+  const raw = {
+    username: String(formData.get("username") ?? "").trim(),
+    email: String(formData.get("email") ?? "").trim(),
+    password: String(formData.get("password") ?? "").trim(),
+    confirmPassword: String(formData.get("confirmPassword") ?? "").trim(),
+    acceptTerms: formData.get("acceptTerms") === "on",
+  };
 
-  if (!acceptTerms) {
-    console.error("Terms must be accepted");
-    return;
-  }
+  const parsed = signupSchema.safeParse(raw);
 
-  if (!username || !email || !password) {
-    console.error("Missing required fields");
-    return;
-  }
-
-  if (password !== confirmPassword) {
-    console.error("Passwords do not match");
-    return;
+  if (!parsed.success) {
+    const msg = parsed.error.issues[0]?.message ?? "Invalid inputs";
+    redirect(`/signup?error=${encodeURIComponent(msg)}`);
   }
 
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.auth.signUp({
-    email,
-    password,
+    email: parsed.data.email,
+    password: parsed.data.password,
     options: {
-      // Detta hamnar i auth.users.user_metadata
-      data: { username },
+      data: { username: parsed.data.username },
     },
   });
 
   if (error) {
-    console.error(error.message);
-    return;
+    redirect(`/signup?error=${encodeURIComponent(error.message)}`);
   }
 
   redirect("/login");
 }
 
 export async function signIn(formData: FormData): Promise<void> {
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "").trim();
+  const raw = {
+    email: String(formData.get("email") ?? "").trim(),
+    password: String(formData.get("password") ?? "").trim(),
+  };
+
+  const parsed = loginSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    const msg = parsed.error.issues[0]?.message ?? "Ogiltiga uppgifter";
+    redirect(`/login?error=${encodeURIComponent(msg)}`);
+  }
 
   const supabase = await createSupabaseServerClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) {
-    console.error(error.message);
-    return;
+    redirect(`/login?error=${encodeURIComponent(error.message)}`);
   }
 
   redirect("/worlds");
 }
 
-export async function signOut() {
+export async function signOut(): Promise<void> {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/login");
