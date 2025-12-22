@@ -5,7 +5,7 @@ import Link from "next/link";
 
 type PageProps = {
   params: Promise<{ worldId: string }>;
-  searchParams?: Promise<{ error?: string }>;
+  searchParams?: Promise<{ error?: string; created?: string }>;
 };
 
 export default async function LocationsPage({
@@ -15,6 +15,7 @@ export default async function LocationsPage({
   const { worldId } = await params;
   const sp = (await searchParams) ?? {};
   const errorMsg = sp.error ? decodeURIComponent(sp.error) : null;
+  const created = sp.created === "1";
 
   const world = await getWorld(worldId);
 
@@ -33,7 +34,7 @@ export default async function LocationsPage({
         </div>
       </header>
 
-      <CreateLocationDialog worldId={worldId} />
+      <CreateLocationDialog worldId={worldId} created={created} />
 
       {errorMsg ? (
         <div role="alert" className="rounded-xl border px-4 py-3 text-sm">
@@ -48,7 +49,7 @@ export default async function LocationsPage({
           </p>
         </section>
       ) : (
-        <ul>
+        <ul className="grid gap-3">
           {locations.map((loc) => (
             <li
               key={loc.id}

@@ -14,7 +14,13 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export default function CreateLocationDialog({ worldId }: { worldId: string }) {
+export default function CreateLocationDialog({
+  worldId,
+  created,
+}: {
+  worldId: string;
+  created?: boolean;
+}) {
   const [open, setOpen] = React.useState(false);
 
   const formRef = React.useRef<HTMLFormElement | null>(null);
@@ -44,6 +50,12 @@ export default function CreateLocationDialog({ worldId }: { worldId: string }) {
     if (open) window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
+
+  React.useEffect(() => {
+    if (!created) return;
+    setOpen(false);
+    reset();
+  }, [created, reset]);
 
   const close = () => {
     setOpen(false);
@@ -77,7 +89,7 @@ export default function CreateLocationDialog({ worldId }: { worldId: string }) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="create-location-title"
-            className="relative w-full max-w-lg rounded-2xl border bg-background p-5 shadow-xl"
+            className="relative w-full max-w-lg rounded-2xl border bg-background-card p-5 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
           >
             <div className="flex items-start justify-between gap-4">
               <div>

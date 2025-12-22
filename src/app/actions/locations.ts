@@ -69,4 +69,5 @@ export async function createLocation(formData: FormData): Promise<void> {
   }
 
   revalidatePath(`/worlds/${parsed.data.worldId}/locations`);
+  redirect(`/worlds/${parsed.data.worldId}/locations?created=1`);
 }
