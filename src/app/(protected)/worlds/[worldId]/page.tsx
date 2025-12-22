@@ -22,12 +22,12 @@ function StatCard({
   return (
     <Link
       href={href}
-      className="group rounded-2xl border border-border-secondary bg-background-card px-4 py-3 transition hover:bg-background-muted hover:border-border-primary"
+      className="group rounded-2xl border border-border-secondary bg-background-card px-4 py-2.5 transition hover:bg-background-muted hover:border-border-primary"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-baseline gap-2">
           <div className="text-xs text-foreground-secondary">{title}</div>
-          <div className="text-xl font-semibold text-foreground-primary">
+          <div className="text-2xl font-semibold text-foreground-primary">
             {value}
           </div>
         </div>
@@ -63,7 +63,7 @@ function ResourceCard({
           {title}
         </h2>
 
-        <p className="mt-2 text-sm text-foreground-secondary line-clamp-3">
+        <p className="mt-3 text-sm text-foreground-secondary line-clamp-3">
           {description}
         </p>
 
