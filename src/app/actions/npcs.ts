@@ -31,37 +31,32 @@ export async function listNpcs(worldId: string) {
     .eq("world_id", worldId)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    throw new Error("Failed to fetch NPCs");
-  }
-
+  if (error) throw new Error("Failed to fetch NPCs");
   return data ?? [];
 }
 
 const createNpcSchema = z.object({
   worldId: z.string().uuid(),
   name: z.string().min(2, "NPC name is too short").max(80),
-  role: z.string().max(120).optional(),
-  summary: z.string().max(500).optional(),
-  description: z.string().max(5000).optional(),
-  alignment: z.string().max(60).optional(),
-  primaryLocationId: z.string().uuid().optional(),
+  role: z.string().max(120).optional().or(z.literal("")),
+  summary: z.string().max(500).optional().or(z.literal("")),
+  description: z.string().max(5000).optional().or(z.literal("")),
+  alignment: z.string().max(60).optional().or(z.literal("")),
+  primaryLocationId: z.string().uuid().optional().or(z.literal("")),
 });
 
 export async function createNpc(formData: FormData): Promise<void> {
   const raw = {
     worldId: String(formData.get("worldId") ?? "").trim(),
     name: String(formData.get("name") ?? "").trim(),
-    role: String(formData.get("role") ?? "").trim() || undefined,
-    summary: String(formData.get("summary") ?? "").trim() || undefined,
-    description: String(formData.get("description") ?? "").trim() || undefined,
-    alignment: String(formData.get("alignment") ?? "").trim() || undefined,
-    primaryLocationId:
-      String(formData.get("primaryLocationId") ?? "").trim() || undefined,
+    role: String(formData.get("role") ?? "").trim(),
+    summary: String(formData.get("summary") ?? "").trim(),
+    description: String(formData.get("description") ?? "").trim(),
+    alignment: String(formData.get("alignment") ?? "").trim(),
+    primaryLocationId: String(formData.get("primaryLocationId") ?? "").trim(),
   };
 
   const parsed = createNpcSchema.safeParse(raw);
-
   if (!parsed.success) {
     const msg = parsed.error.issues[0]?.message ?? "Invalid NPC data";
     redirect(`/worlds/${raw.worldId}/npcs?error=${encodeURIComponent(msg)}`);
@@ -69,17 +64,16 @@ export async function createNpc(formData: FormData): Promise<void> {
 
   const supabase = await createSupabaseServerClient();
   const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData.user) redirect("/login");
 
-  if (authError || !authData.user) {
-    redirect("/login");
-  }
+  const primaryLocationId = parsed.data.primaryLocationId || null;
 
   try {
-    if (parsed.data.primaryLocationId) {
+    if (primaryLocationId) {
       await assertLocationInWorld(
         supabase,
         parsed.data.worldId,
-        parsed.data.primaryLocationId
+        primaryLocationId
       );
     }
   } catch (e) {
@@ -92,11 +86,11 @@ export async function createNpc(formData: FormData): Promise<void> {
   const { error } = await supabase.from("npcs").insert({
     world_id: parsed.data.worldId,
     name: parsed.data.name,
-    role: parsed.data.role,
-    summary: parsed.data.summary,
-    description: parsed.data.description,
-    alignment: parsed.data.alignment,
-    primary_location_id: parsed.data.primaryLocationId ?? null,
+    role: parsed.data.role || null,
+    summary: parsed.data.summary || null,
+    description: parsed.data.description || null,
+    alignment: parsed.data.alignment || null,
+    primary_location_id: primaryLocationId,
   });
 
   if (error) {
@@ -118,9 +112,7 @@ const getNpcSchema = z.object({
 
 export async function getNpc(worldId: string, npcId: string) {
   const parsed = getNpcSchema.safeParse({ worldId, npcId });
-  if (!parsed.success) {
-    redirect(`/worlds/${worldId}/npcs`);
-  }
+  if (!parsed.success) redirect(`/worlds/${worldId}/npcs`);
 
   const supabase = await createSupabaseServerClient();
 
@@ -146,11 +138,11 @@ const updateNpcSchema = z.object({
   worldId: z.string().uuid(),
   npcId: z.string().uuid(),
   name: z.string().min(2, "NPC name is too short").max(80),
-  role: z.string().max(120).optional(),
-  summary: z.string().max(500).optional(),
-  description: z.string().max(5000).optional(),
-  alignment: z.string().max(60).optional(),
-  primaryLocationId: z.string().uuid().optional().nullable(),
+  role: z.string().max(120).optional().or(z.literal("")),
+  summary: z.string().max(500).optional().or(z.literal("")),
+  description: z.string().max(5000).optional().or(z.literal("")),
+  alignment: z.string().max(60).optional().or(z.literal("")),
+  primaryLocationId: z.string().uuid().optional().or(z.literal("")),
 });
 
 export async function updateNpc(formData: FormData): Promise<void> {
@@ -158,19 +150,14 @@ export async function updateNpc(formData: FormData): Promise<void> {
     worldId: String(formData.get("worldId") ?? "").trim(),
     npcId: String(formData.get("npcId") ?? "").trim(),
     name: String(formData.get("name") ?? "").trim(),
-    role: String(formData.get("role") ?? "").trim() || undefined,
-    summary: String(formData.get("summary") ?? "").trim() || undefined,
-    description: String(formData.get("description") ?? "").trim() || undefined,
-    alignment: String(formData.get("alignment") ?? "").trim() || undefined,
-    primaryLocationId: (() => {
-      const v = String(formData.get("primaryLocationId") ?? "").trim();
-      if (!v) return null;
-      return v;
-    })(),
+    role: String(formData.get("role") ?? "").trim(),
+    summary: String(formData.get("summary") ?? "").trim(),
+    description: String(formData.get("description") ?? "").trim(),
+    alignment: String(formData.get("alignment") ?? "").trim(),
+    primaryLocationId: String(formData.get("primaryLocationId") ?? "").trim(),
   };
 
   const parsed = updateNpcSchema.safeParse(raw);
-
   if (!parsed.success) {
     const msg = parsed.error.issues[0]?.message ?? "Invalid NPC data";
     redirect(
@@ -184,12 +171,14 @@ export async function updateNpc(formData: FormData): Promise<void> {
   const { data: authData, error: authError } = await supabase.auth.getUser();
   if (authError || !authData.user) redirect("/login");
 
+  const primaryLocationId = parsed.data.primaryLocationId || null;
+
   try {
-    if (parsed.data.primaryLocationId) {
+    if (primaryLocationId) {
       await assertLocationInWorld(
         supabase,
         parsed.data.worldId,
-        parsed.data.primaryLocationId
+        primaryLocationId
       );
     }
   } catch (e) {
@@ -205,11 +194,11 @@ export async function updateNpc(formData: FormData): Promise<void> {
     .from("npcs")
     .update({
       name: parsed.data.name,
-      role: parsed.data.role,
-      summary: parsed.data.summary,
-      description: parsed.data.description,
-      alignment: parsed.data.alignment,
-      primary_location_id: parsed.data.primaryLocationId ?? null,
+      role: parsed.data.role || null,
+      summary: parsed.data.summary || null,
+      description: parsed.data.description || null,
+      alignment: parsed.data.alignment || null,
+      primary_location_id: primaryLocationId,
     })
     .eq("id", parsed.data.npcId)
     .eq("world_id", parsed.data.worldId);
@@ -224,7 +213,6 @@ export async function updateNpc(formData: FormData): Promise<void> {
 
   revalidatePath(`/worlds/${parsed.data.worldId}/npcs`);
   revalidatePath(`/worlds/${parsed.data.worldId}/npcs/${parsed.data.npcId}`);
-
   redirect(`/worlds/${parsed.data.worldId}/npcs/${parsed.data.npcId}?saved=1`);
 }
 
@@ -240,10 +228,7 @@ export async function deleteNpc(formData: FormData): Promise<void> {
   };
 
   const parsed = deleteNpcSchema.safeParse(raw);
-
-  if (!parsed.success) {
-    redirect(`/worlds/${raw.worldId}/npcs`);
-  }
+  if (!parsed.success) redirect(`/worlds/${raw.worldId}/npcs`);
 
   const supabase = await createSupabaseServerClient();
   const { data: authData, error: authError } = await supabase.auth.getUser();

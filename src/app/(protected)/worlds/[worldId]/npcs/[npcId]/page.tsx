@@ -1,5 +1,6 @@
 import { getNpc } from "@/app/actions/npcs";
 import { getWorld } from "@/app/actions/worlds";
+import { listLocations } from "@/app/actions/locations";
 import Link from "next/link";
 import NpcEditorCard from "@/components/npcs/NpcEditorCard";
 import FlashBanner from "@/components/ui/FlashBanner";
@@ -22,6 +23,7 @@ export default async function NpcDetailPage({
 
   const world = await getWorld(worldId);
   const npc = await getNpc(worldId, npcId);
+  const locations = await listLocations(worldId);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-6">
@@ -57,7 +59,7 @@ export default async function NpcDetailPage({
 
       <FlashBanner />
 
-      <NpcEditorCard worldId={worldId} npc={npc} />
+      <NpcEditorCard worldId={worldId} npc={npc} locations={locations} />
     </div>
   );
 }
