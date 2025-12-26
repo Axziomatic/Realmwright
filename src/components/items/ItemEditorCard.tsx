@@ -13,6 +13,7 @@ const schema = z.object({
   rarity: z.string().max(40).optional().or(z.literal("")),
   summary: z.string().max(500).optional().or(z.literal("")),
   description: z.string().max(5000).optional().or(z.literal("")),
+  locationId: z.string().uuid().optional().or(z.literal("")),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -30,9 +31,13 @@ type Props = {
     owner_npc_id?: string | null;
     location_id?: string | null;
   };
+  locations: {
+    id: string;
+    name: string;
+  }[];
 };
 
-export default function ItemEditorCard({ worldId, item }: Props) {
+export default function ItemEditorCard({ worldId, item, locations }: Props) {
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
   const {
@@ -47,6 +52,7 @@ export default function ItemEditorCard({ worldId, item }: Props) {
       rarity: item.rarity ?? "",
       summary: item.summary ?? "",
       description: item.description ?? "",
+      locationId: item.location_id ?? "",
     },
     mode: "onSubmit",
   });
@@ -100,6 +106,7 @@ export default function ItemEditorCard({ worldId, item }: Props) {
         <input type="hidden" name="worldId" value={worldId} />
         <input type="hidden" name="itemId" value={item.id} />
 
+        {/* Name */}
         <div className="space-y-2">
           <label className="text-sm font-medium" htmlFor="name">
             Name
@@ -110,13 +117,14 @@ export default function ItemEditorCard({ worldId, item }: Props) {
             className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
             aria-invalid={Boolean(errors.name)}
           />
-          {errors.name ? (
+          {errors.name && (
             <p className="text-sm" role="alert">
               {errors.name.message}
             </p>
-          ) : null}
+          )}
         </div>
 
+        {/* Type + Rarity */}
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="type">
@@ -127,13 +135,7 @@ export default function ItemEditorCard({ worldId, item }: Props) {
               {...register("type")}
               className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
               placeholder="Weapon / Potion / Relic ..."
-              aria-invalid={Boolean(errors.type)}
             />
-            {errors.type ? (
-              <p className="text-sm" role="alert">
-                {errors.type.message}
-              </p>
-            ) : null}
           </div>
 
           <div className="space-y-2">
@@ -145,16 +147,33 @@ export default function ItemEditorCard({ worldId, item }: Props) {
               {...register("rarity")}
               className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
               placeholder="Common / Rare / Legendary ..."
-              aria-invalid={Boolean(errors.rarity)}
             />
-            {errors.rarity ? (
-              <p className="text-sm" role="alert">
-                {errors.rarity.message}
-              </p>
-            ) : null}
           </div>
         </div>
 
+        {/* Location relation */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium" htmlFor="locationId">
+            Location
+          </label>
+          <select
+            id="locationId"
+            {...register("locationId")}
+            className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
+          >
+            <option value="">None</option>
+            {locations.map((loc) => (
+              <option key={loc.id} value={loc.id}>
+                {loc.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs opacity-70">
+            Where this item is currently located.
+          </p>
+        </div>
+
+        {/* Summary */}
         <div className="space-y-2">
           <label className="text-sm font-medium" htmlFor="summary">
             Summary
@@ -164,17 +183,10 @@ export default function ItemEditorCard({ worldId, item }: Props) {
             {...register("summary")}
             rows={3}
             className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
-            aria-invalid={Boolean(errors.summary)}
           />
-          {errors.summary ? (
-            <p className="text-sm" role="alert">
-              {errors.summary.message}
-            </p>
-          ) : (
-            <p className="text-xs opacity-70">Max 500 characters.</p>
-          )}
         </div>
 
+        {/* Description */}
         <div className="space-y-2">
           <label className="text-sm font-medium" htmlFor="description">
             Description
@@ -185,15 +197,7 @@ export default function ItemEditorCard({ worldId, item }: Props) {
             rows={8}
             className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
             placeholder="Write a longer description..."
-            aria-invalid={Boolean(errors.description)}
           />
-          {errors.description ? (
-            <p className="text-sm" role="alert">
-              {errors.description.message}
-            </p>
-          ) : (
-            <p className="text-xs opacity-70">Max 5000 characters.</p>
-          )}
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-2">

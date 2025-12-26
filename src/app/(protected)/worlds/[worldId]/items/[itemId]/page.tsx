@@ -1,5 +1,6 @@
 import { getItem } from "@/app/actions/items";
 import { getWorld } from "@/app/actions/worlds";
+import { listLocations } from "@/app/actions/locations";
 import Link from "next/link";
 import ItemEditorCard from "@/components/items/ItemEditorCard";
 import FlashBanner from "@/components/ui/FlashBanner";
@@ -22,6 +23,7 @@ export default async function ItemDetailPage({
 
   const world = await getWorld(worldId);
   const item = await getItem(worldId, itemId);
+  const locations = await listLocations(worldId);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-6">
@@ -57,7 +59,7 @@ export default async function ItemDetailPage({
 
       <FlashBanner />
 
-      <ItemEditorCard worldId={worldId} item={item} />
+      <ItemEditorCard worldId={worldId} item={item} locations={locations} />
     </div>
   );
 }
