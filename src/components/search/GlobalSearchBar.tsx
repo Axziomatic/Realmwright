@@ -76,19 +76,38 @@ export default function GlobalSearchBar() {
 
   const disabled = !worldId;
 
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+
+  React.useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      const isK = e.key.toLowerCase() === "k";
+      const isMod = e.metaKey || e.ctrlKey;
+      if (isMod && isK) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   return (
-    <div ref={boxRef} className="relative w-full max-w-xl">
+    <div ref={boxRef} className="relative w-full">
       <div className="relative">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-70" />
         <input
           value={value}
+          ref={inputRef}
           onChange={(e) => setValue(e.target.value)}
           onFocus={() => {
             if (!disabled && results.length > 0) setOpen(true);
           }}
           placeholder={disabled ? "Select a world to search..." : "Search..."}
           disabled={disabled}
-          className="w-full rounded-2xl border border-border-secondary bg-background-card pl-9 pr-3 py-2 text-sm outline-none focus:ring-2"
+          className="w-full bg-transparent pl-9 pr-3 py-2 text-sm outline-none focus:ring-0"
         />
       </div>
 
