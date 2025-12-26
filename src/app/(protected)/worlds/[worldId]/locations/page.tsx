@@ -2,6 +2,7 @@ import { getWorld } from "@/app/actions/worlds";
 import { listLocations } from "@/app/actions/locations";
 import CreateLocationDialog from "@/components/locations/CreateLocationDialog";
 import Link from "next/link";
+import FlashBanner from "@/components/ui/FlashBanner";
 
 type PageProps = {
   params: Promise<{ worldId: string }>;
@@ -33,6 +34,8 @@ export default async function LocationsPage({
           </p>
         </div>
       </header>
+
+      <FlashBanner />
 
       <CreateLocationDialog worldId={worldId} created={created} />
 

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateLocation, deleteLocation } from "@/app/actions/locations";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(80),
@@ -49,6 +50,9 @@ export default function LocationEditorCard({ worldId, location }: Props) {
     formRef.current?.requestSubmit();
   };
 
+  const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const deleteRef = React.useRef<HTMLFormElement | null>(null);
+
   return (
     <section className="rounded-2xl border border-border-secondary bg-background-card p-5 space-y-6">
       <div className="flex items-start justify-between gap-4">
@@ -57,30 +61,35 @@ export default function LocationEditorCard({ worldId, location }: Props) {
             Details
           </div>
           <div className="mt-1 text-sm text-foreground-secondary">
-            Edit your location. Changes are saved when you click
-            &quot;Save&quot;.
+            Edit your location. Changes are saved when you click{" "}
+            <span className="font-medium">Save</span>.
           </div>
         </div>
 
-        <form action={deleteLocation}> ... </form>
+        <form ref={deleteRef} action={deleteLocation}>
+          <input type="hidden" name="worldId" value={worldId} />
+          <input type="hidden" name="locationId" value={location.id} />
+          <button
+            type="button"
+            className="rounded-xl px-3 py-2 text-sm border"
+            onClick={() => setConfirmOpen(true)}
+          >
+            Delete
+          </button>
+        </form>
       </div>
 
-      <form action={deleteLocation}>
-        <input type="hidden" name="worldId" value={worldId} />
-        <input type="hidden" name="locationId" value={location.id} />
-        <button
-          type="submit"
-          className="rounded-xl px-3 py-2 text-sm border"
-          onClick={(e) => {
-            const ok = window.confirm(
-              "Delete this location? This cannot be undone"
-            );
-            if (!ok) e.preventDefault();
-          }}
-        >
-          Delete
-        </button>
-      </form>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete location?"
+        description="This cannot be undone."
+        confirmText="Delete"
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false);
+          deleteRef.current?.requestSubmit();
+        }}
+      />
 
       <form ref={formRef} action={updateLocation} className="space-y-4">
         <input type="hidden" name="worldId" value={worldId} />
@@ -93,7 +102,6 @@ export default function LocationEditorCard({ worldId, location }: Props) {
           <input
             id="name"
             {...register("name")}
-            name="name"
             className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
             aria-invalid={Boolean(errors.name)}
           />
@@ -111,7 +119,6 @@ export default function LocationEditorCard({ worldId, location }: Props) {
           <input
             id="type"
             {...register("type")}
-            name="type"
             className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
             placeholder="City / Dungeon / Region ..."
             aria-invalid={Boolean(errors.type)}
@@ -130,7 +137,6 @@ export default function LocationEditorCard({ worldId, location }: Props) {
           <textarea
             id="summary"
             {...register("summary")}
-            name="summary"
             rows={3}
             className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
             aria-invalid={Boolean(errors.summary)}
@@ -151,7 +157,6 @@ export default function LocationEditorCard({ worldId, location }: Props) {
           <textarea
             id="description"
             {...register("description")}
-            name="description"
             rows={8}
             className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
             placeholder="Write a longer description..."

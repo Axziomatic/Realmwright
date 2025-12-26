@@ -1,18 +1,22 @@
 import { getLocation } from "@/app/actions/locations";
 import { getWorld } from "@/app/actions/worlds";
 import Link from "next/link";
+import LocationEditorCard from "@/components/locations/LocationEditorCard";
+import FlashBanner from "@/components/ui/FlashBanner";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = {
-  params: { worldId: string; locationId: string };
-  searchParams?: { error?: string; saved?: string };
+  params: Promise<{ worldId: string; locationId: string }>;
+  searchParams?: Promise<{ error?: string; saved?: string }>;
 };
 
 export default async function LocationDetailPage({
   params,
   searchParams,
 }: PageProps) {
-  const { worldId, locationId } = params;
-  const sp = searchParams ?? {};
+  const { worldId, locationId } = await params;
+  const sp = (await searchParams) ?? {};
   const errorMsg = sp.error ? decodeURIComponent(sp.error) : null;
   const saved = sp.saved === "1";
 
@@ -50,6 +54,10 @@ export default async function LocationDetailPage({
           </div>
         ) : null}
       </header>
+
+      <FlashBanner />
+
+      <LocationEditorCard worldId={worldId} location={location} />
     </div>
   );
 }
