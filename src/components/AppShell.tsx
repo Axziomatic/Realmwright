@@ -2,13 +2,14 @@
 
 import Sidebar from "@/components/Sidebar";
 import { useAppStore } from "@/store/appStore";
+import GlobalSearchBar from "./search/GlobalSearchBar";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
 
   return (
     <div className="min-h-dvh bg-background-main text-foreground-primary">
-      <header className="flex items-center justify-between px-4 py-3">
+      <header className="flex items-center justify-between gap-4 px-4 py-3">
         <button
           type="button"
           onClick={toggleSidebar}
@@ -17,7 +18,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           Menu
         </button>
 
-        <div className="font-heading text-lg tracking-wide">REALMWRIGHT</div>
+        <div className="flex-1 flex justify-center">
+          <GlobalSearchBar />
+        </div>
 
         <div className="w-[60px]" />
       </header>
