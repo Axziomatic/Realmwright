@@ -13,6 +13,8 @@ const schema = z.object({
   rarity: z.string().max(40).optional().or(z.literal("")),
   summary: z.string().max(500).optional().or(z.literal("")),
   description: z.string().max(5000).optional().or(z.literal("")),
+  locationId: z.string().uuid().optional().or(z.literal("")),
+  ownerNpcId: z.string().uuid().optional().or(z.literal("")),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -30,9 +32,16 @@ type Props = {
     owner_npc_id?: string | null;
     location_id?: string | null;
   };
+  locations: { id: string; name: string }[];
+  npcs: { id: string; name: string; role?: string | null }[];
 };
 
-export default function ItemEditorCard({ worldId, item }: Props) {
+export default function ItemEditorCard({
+  worldId,
+  item,
+  locations,
+  npcs,
+}: Props) {
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
   const {
@@ -47,13 +56,13 @@ export default function ItemEditorCard({ worldId, item }: Props) {
       rarity: item.rarity ?? "",
       summary: item.summary ?? "",
       description: item.description ?? "",
+      locationId: item.location_id ?? "",
+      ownerNpcId: item.owner_npc_id ?? "",
     },
     mode: "onSubmit",
   });
 
-  const onValid = () => {
-    formRef.current?.requestSubmit();
-  };
+  const onValid = () => formRef.current?.requestSubmit();
 
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const deleteRef = React.useRef<HTMLFormElement | null>(null);
@@ -129,11 +138,6 @@ export default function ItemEditorCard({ worldId, item }: Props) {
               placeholder="Weapon / Potion / Relic ..."
               aria-invalid={Boolean(errors.type)}
             />
-            {errors.type ? (
-              <p className="text-sm" role="alert">
-                {errors.type.message}
-              </p>
-            ) : null}
           </div>
 
           <div className="space-y-2">
@@ -147,11 +151,68 @@ export default function ItemEditorCard({ worldId, item }: Props) {
               placeholder="Common / Rare / Legendary ..."
               aria-invalid={Boolean(errors.rarity)}
             />
-            {errors.rarity ? (
-              <p className="text-sm" role="alert">
-                {errors.rarity.message}
-              </p>
-            ) : null}
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="locationId">
+              Location
+            </label>
+            <select
+              id="locationId"
+              {...register("locationId")}
+              className="w-full rounded-xl border border-border-secondary bg-background-card px-3 py-2 text-sm text-foreground-primary
+             focus:outline-none focus:ring-2 focus:ring-accent-primary/40"
+            >
+              <option
+                value=""
+                className="bg-background-card text-foreground-primary"
+              >
+                None
+              </option>
+              {locations.map((loc) => (
+                <option
+                  key={loc.id}
+                  value={loc.id}
+                  className="bg-background-card text-foreground-primary"
+                >
+                  {loc.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs opacity-70">
+              Where this item is currently located.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="ownerNpcId">
+              Owner NPC
+            </label>
+            <select
+              id="ownerNpcId"
+              {...register("ownerNpcId")}
+              className="w-full rounded-xl border border-border-secondary bg-background-card px-3 py-2 text-sm text-foreground-primary
+             focus:outline-none focus:ring-2 focus:ring-accent-primary/40"
+            >
+              <option
+                value=""
+                className="bg-background-card text-foreground-primary"
+              >
+                None
+              </option>
+              {npcs.map((npc) => (
+                <option
+                  key={npc.id}
+                  value={npc.id}
+                  className="bg-background-card text-foreground-primary"
+                >
+                  {npc.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs opacity-70">Who currently owns this item.</p>
           </div>
         </div>
 
