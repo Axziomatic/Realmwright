@@ -162,11 +162,21 @@ export default function ItemEditorCard({
             <select
               id="locationId"
               {...register("locationId")}
-              className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
+              className="w-full rounded-xl border border-border-secondary bg-background-card px-3 py-2 text-sm text-foreground-primary
+             focus:outline-none focus:ring-2 focus:ring-accent-primary/40"
             >
-              <option value="">None</option>
+              <option
+                value=""
+                className="bg-background-card text-foreground-primary"
+              >
+                None
+              </option>
               {locations.map((loc) => (
-                <option key={loc.id} value={loc.id}>
+                <option
+                  key={loc.id}
+                  value={loc.id}
+                  className="bg-background-card text-foreground-primary"
+                >
                   {loc.name}
                 </option>
               ))}
@@ -183,11 +193,21 @@ export default function ItemEditorCard({
             <select
               id="ownerNpcId"
               {...register("ownerNpcId")}
-              className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
+              className="w-full rounded-xl border border-border-secondary bg-background-card px-3 py-2 text-sm text-foreground-primary
+             focus:outline-none focus:ring-2 focus:ring-accent-primary/40"
             >
-              <option value="">None</option>
+              <option
+                value=""
+                className="bg-background-card text-foreground-primary"
+              >
+                None
+              </option>
               {npcs.map((npc) => (
-                <option key={npc.id} value={npc.id}>
+                <option
+                  key={npc.id}
+                  value={npc.id}
+                  className="bg-background-card text-foreground-primary"
+                >
                   {npc.name}
                 </option>
               ))}
