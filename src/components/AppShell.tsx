@@ -3,6 +3,7 @@
 import Sidebar from "@/components/Sidebar";
 import { useAppStore } from "@/store/appStore";
 import GlobalSearchBar from "./search/GlobalSearchBar";
+import { signOut } from "@/app/actions/auth";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
@@ -26,7 +27,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            <div className="w-[60px]" />
+            <div className="flex items-center gap-2">
+              <form action={signOut}>
+                <button className="rounded-xl border border-border-secondary bg-background-card px-3 py-2 text-sm hover:bg-background-muted">
+                  Log out
+                </button>
+              </form>
+            </div>
           </div>
         </header>
       </div>

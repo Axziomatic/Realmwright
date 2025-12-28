@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { getSessionUser } from "../actions/session";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -12,10 +14,6 @@ import {
   Wand2,
   ArrowRight,
 } from "lucide-react";
-import { getSessionUser } from "../actions/session";
-
-// Om du har auth-helpern redan: importera den och toggla CTA.
-// import { getSessionUser } from "@/app/actions/session";
 
 type Feature = {
   title: string;
@@ -38,8 +36,8 @@ function ButtonLink({
     "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium no-underline transition";
   const styles =
     variant === "primary"
-      ? "bg-accent-highlight text-background-main hover:brightness-110"
-      : "border border-border-secondary bg-background-card text-foreground-primary hover:bg-background-muted";
+      ? "bg-accent-highlight text-background-main hover:text-background-main hover:brightness-110"
+      : "border border-border-secondary bg-background-card text-foreground-primary hover:text-foreground-primary hover:bg-background-muted";
 
   return (
     <Link href={href} className={`${base} ${styles}`}>
@@ -146,15 +144,17 @@ export default async function LandingPage() {
     },
   ];
 
+  if (user) {
+    redirect("/worlds");
+  }
+
   return (
     <div className="min-h-dvh bg-background-main text-foreground-primary">
-      {/* Background glow (matchar screenshotens “soft spotlight”) */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),rgba(0,0,0,0)_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,170,0,0.10),rgba(0,0,0,0)_60%)]" />
       </div>
 
-      {/* Top brand */}
       <header className="mx-auto w-full max-w-6xl px-4 pt-10">
         <div className="flex items-center justify-center gap-3">
           <div className="rounded-xl bg-accent-highlight p-2 shadow-[0_8px_25px_rgba(0,0,0,0.35)]">
@@ -167,7 +167,6 @@ export default async function LandingPage() {
       </header>
 
       <main className="mx-auto w-full max-w-6xl px-4 pb-14">
-        {/* HERO */}
         <section className="pt-10 text-center">
           <h1 className="mx-auto max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl">
             <span className="text-foreground-primary">Forge Your Worlds,</span>{" "}
@@ -182,7 +181,7 @@ export default async function LandingPage() {
 
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
             {isAuthed ? (
-              <ButtonLink href="/(protected)/worlds" variant="primary">
+              <ButtonLink href="/worlds" variant="primary">
                 Go to Dashboard <ArrowRight className="h-4 w-4" />
               </ButtonLink>
             ) : (
@@ -194,7 +193,6 @@ export default async function LandingPage() {
             )}
           </div>
 
-          {/* Hero image panel */}
           <div className="mx-auto mt-10 w-full max-w-4xl overflow-hidden rounded-2xl border border-border-secondary bg-background-card shadow-[0_18px_60px_rgba(0,0,0,0.45)]">
             <div className="relative aspect-[16/7] w-full">
               <Image
@@ -204,13 +202,11 @@ export default async function LandingPage() {
                 priority
                 className="object-cover"
               />
-              {/* vignette overlay som i screenshot */}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background-main/70 via-transparent to-transparent" />
             </div>
           </div>
         </section>
 
-        {/* FEATURES heading */}
         <section className="mt-16 text-center">
           <h2 className="text-xl font-semibold text-foreground-primary sm:text-2xl">
             Everything You Need to Build Worlds
@@ -219,14 +215,12 @@ export default async function LandingPage() {
             Organize your campaign with powerful tools designed for storytellers
           </p>
 
-          {/* Features grid (3x2) */}
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {features.map((f) => (
               <FeatureCard key={f.title} f={f} />
             ))}
           </div>
 
-          {/* Built for GMs panel */}
           <div className="mt-10 rounded-2xl border border-border-secondary bg-background-card/60 p-8 shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
             <h3 className="text-base font-semibold text-foreground-primary">
               Built for Game Masters
@@ -252,7 +246,6 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* Bottom CTA (med “divider”-känsla) */}
         <section className="mt-14 border-t border-border-secondary pt-12 text-center">
           <h2 className="text-3xl font-semibold text-foreground-primary sm:text-4xl">
             Ready to Begin Your Journey?
@@ -264,7 +257,7 @@ export default async function LandingPage() {
 
           <div className="mt-7 flex justify-center">
             {isAuthed ? (
-              <ButtonLink href="/(protected)/worlds" variant="primary">
+              <ButtonLink href="/worlds" variant="primary">
                 Go to Dashboard <ArrowRight className="h-4 w-4" />
               </ButtonLink>
             ) : (
@@ -276,7 +269,6 @@ export default async function LandingPage() {
         </section>
       </main>
 
-      {/* Minimal footer (kan byggas ut senare) */}
       <footer className="border-t border-border-secondary bg-background-card/40">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-6 text-center text-xs text-foreground-secondary sm:flex-row sm:items-center sm:justify-between sm:text-left">
           <div>© {new Date().getFullYear()} Realmwright</div>
