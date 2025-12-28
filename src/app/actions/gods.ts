@@ -71,7 +71,19 @@ export async function createGod(formData: FormData): Promise<void> {
   redirect(`/worlds/${parsed.data.worldId}/gods?created=1`);
 }
 
+const getGodSchema = z.object({
+  worldId: z.string().uuid(),
+  godId: z.string().uuid(),
+});
+
 export async function getGod(worldId: string, godId: string) {
+  const parsed = getGodSchema.safeParse({ worldId, godId });
+  if (!parsed.success) {
+    redirect(
+      `/worlds/${worldId}/gods?error=${encodeURIComponent("Invalid god id")}`
+    );
+  }
+
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
