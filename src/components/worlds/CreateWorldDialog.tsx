@@ -76,7 +76,7 @@ export default function CreateWorldDialog() {
         >
           <button
             type="button"
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"
             aria-label="Close dialog"
             onClick={close}
           />
@@ -85,7 +85,7 @@ export default function CreateWorldDialog() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="create-world-title"
-            className="relative w-full max-w-lg rounded-2xl border bg-background p-5 shadow-xl"
+            className="relative w-full max-w-lg rounded-2xl border border-border-secondary bg-background-card p-5 shadow-xl"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -119,7 +119,7 @@ export default function CreateWorldDialog() {
                     nameRef.current = el;
                   }}
                   name="name"
-                  className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
+                  className="w-full rounded-xl border border-border-primary bg-background-muted px-3 py-2 text-sm text-foreground-primary placeholder:text-foreground-secondary/70 focus:outline-none focus:ring-2 focus:ring-accent-highlight"
                   placeholder="Eldermoor"
                   aria-invalid={Boolean(errors.name)}
                 />
@@ -139,7 +139,7 @@ export default function CreateWorldDialog() {
                   {...register("summary")}
                   name="summary"
                   rows={3}
-                  className="w-full rounded-xl border px-3 py-2 text-sm bg-transparent"
+                  className="w-full rounded-xl border border-border-primary bg-background-muted px-3 py-2 text-sm text-foreground-primary placeholder:text-foreground-secondary/70 focus:outline-none focus:ring-2 focus:ring-accent-highlight"
                   placeholder="A dark fantasy realm where ancient magic..."
                   aria-invalid={Boolean(errors.summary)}
                 />
