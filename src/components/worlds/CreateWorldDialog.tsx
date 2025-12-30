@@ -64,7 +64,7 @@ export default function CreateWorldDialog() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-xl px-4 py-2 text-sm font-medium border"
+        className="inline-flex items-center gap-2 rounded-xl bg-accent-primary px-4 py-2 text-sm font-medium text-black hover:bg-accent-highlight focus:outline-none focus:ring-2 focus:ring-accent-highlight"
       >
         + Create New World
       </button>
