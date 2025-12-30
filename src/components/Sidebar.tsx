@@ -37,13 +37,6 @@ const navItems = [
     worldScoped: true,
   },
   {
-    key: "factions",
-    label: "Factions",
-    icon: Flag,
-    path: "/factions",
-    worldScoped: true,
-  },
-  {
     key: "gods",
     label: "Gods",
     icon: Sparkles,
