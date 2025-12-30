@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/supabaseServerClient";
+import { createSupabaseActionClient } from "@/lib/supabase/supabaseActionClient";
 import { loginSchema, signupSchema } from "@/lib/validators/auth";
 
 export async function signUp(formData: FormData): Promise<void> {
@@ -20,14 +20,12 @@ export async function signUp(formData: FormData): Promise<void> {
     redirect(`/signup?error=${encodeURIComponent(msg)}`);
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseActionClient();
 
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: {
-      data: { username: parsed.data.username },
-    },
+    options: { data: { username: parsed.data.username } },
   });
 
   if (error) {
@@ -50,7 +48,7 @@ export async function signIn(formData: FormData): Promise<void> {
     redirect(`/login?error=${encodeURIComponent(msg)}`);
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseActionClient();
 
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
@@ -62,7 +60,8 @@ export async function signIn(formData: FormData): Promise<void> {
 }
 
 export async function signOut(): Promise<void> {
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
+  const supabase = await createSupabaseActionClient();
+  const { error } = await supabase.auth.signOut();
+
   redirect("/login");
 }
