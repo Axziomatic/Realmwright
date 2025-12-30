@@ -1,7 +1,8 @@
+// lib/supabase/supabaseActionClient.ts
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
-export async function createSupabaseServerClient() {
+export async function createSupabaseActionClient() {
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -12,7 +13,11 @@ export async function createSupabaseServerClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll() {},
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        },
       },
     }
   );
