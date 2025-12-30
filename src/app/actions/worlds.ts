@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/supabaseServerClient";
+import { getWorldDashboardCounts } from "./worldDashboard";
 
 const createWorldSchema = z.object({
   name: z.string().min(2, "World name is too short").max(50),
@@ -18,11 +19,28 @@ export async function listWorlds() {
     .select("id, name, slug, summary, is_private, created_at")
     .order("created_at", { ascending: false });
 
-  if (error) {
+  if (error || !data) {
     throw new Error("Failed to fetch worlds");
   }
 
-  return data;
+  const countsList = await Promise.all(
+    data.map(async (world) => {
+      const counts = await getWorldDashboardCounts(world.id);
+      return [world.id, counts] as const;
+    })
+  );
+
+  const countsById = new Map(countsList);
+
+  return data.map((world) => ({
+    ...world,
+    counts: countsById.get(world.id) ?? {
+      locations: 0,
+      npcs: 0,
+      items: 0,
+      gods: 0,
+    },
+  }));
 }
 
 export async function getWorld(worldId: string) {

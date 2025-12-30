@@ -48,7 +48,7 @@ export default async function NpcsPage({ params, searchParams }: PageProps) {
           </p>
         </section>
       ) : (
-        <ul className="grid gap-3">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {npcs.map((npc) => (
             <li
               key={npc.id}

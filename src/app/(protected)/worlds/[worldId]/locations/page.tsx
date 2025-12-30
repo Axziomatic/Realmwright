@@ -52,7 +52,7 @@ export default async function LocationsPage({
           </p>
         </section>
       ) : (
-        <ul className="grid gap-3">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {locations.map((loc) => (
             <li
               key={loc.id}

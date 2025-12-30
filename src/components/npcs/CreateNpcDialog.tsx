@@ -71,7 +71,7 @@ export default function CreateNpcDialog({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-xl px-4 py-2 text-sm font-medium border"
+        className="rounded-xl px-4 py-2 text-sm font-medium border border-border-secondary bg-accent-primary text-black"
       >
         + Create NPC
       </button>
@@ -187,7 +187,7 @@ export default function CreateNpcDialog({
                 </button>
                 <button
                   type="button"
-                  className="rounded-xl px-4 py-2 text-sm font-medium border"
+                  className="rounded-xl px-4 py-2 text-sm font-medium border border-border-secondary bg-accent-primary text-black"
                   onClick={() => void handleSubmit(onValid)()}
                 >
                   Create

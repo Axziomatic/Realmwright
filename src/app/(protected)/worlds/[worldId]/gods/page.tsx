@@ -48,7 +48,7 @@ export default async function GodsPage({ params, searchParams }: PageProps) {
           </p>
         </section>
       ) : (
-        <ul className="grid gap-3">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {gods.map((god) => (
             <li
               key={god.id}
