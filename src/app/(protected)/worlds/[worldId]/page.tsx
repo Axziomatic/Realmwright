@@ -13,30 +13,31 @@ function StatCard({
   value,
   href,
   Icon,
+  accentClass,
 }: {
   title: string;
   value: number;
   href: string;
   Icon: React.ElementType;
+  accentClass: string;
 }) {
   return (
     <Link
       href={href}
-      className="group rounded-2xl border border-border-secondary bg-background-card px-4 py-2.5 transition hover:bg-background-muted hover:border-border-primary"
+      className="group rounded-2xl border border-border-secondary bg-background-card px-4 py-2.5 transition hover:bg-background-muted hover:border-border-primary focus:outline-none focus:ring-2 focus:ring-accent-highlight"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-baseline gap-2">
           <div className="text-xs text-foreground-secondary">{title}</div>
-          <div className="text-2xl font-semibold text-foreground-primary">
-            {value}
-          </div>
+          <div className={`text-2xl font-semibold ${accentClass}`}>{value}</div>
         </div>
 
-        <Icon className="h-5 w-5 text-foreground-secondary" />
+        <Icon className={`h-5 w-5 ${accentClass}`} />
       </div>
     </Link>
   );
 }
+
 function ResourceCard({
   title,
   description,
@@ -44,6 +45,8 @@ function ResourceCard({
   count,
   href,
   Icon,
+  accentClass,
+  accentBgClass,
 }: {
   title: string;
   description: string;
@@ -51,11 +54,13 @@ function ResourceCard({
   count: number;
   href: string;
   Icon?: React.ElementType;
+  accentClass: string; // text color for number + icon
+  accentBgClass: string; // subtle bg behind icon
 }) {
   return (
     <Link
       href={href}
-      className="group relative overflow-hidden rounded-2xl border border-border-secondary bg-background-card transition hover:bg-background-muted hover:border-border-primary"
+      className="group relative overflow-hidden rounded-2xl border border-border-secondary bg-background-card transition hover:bg-background-muted hover:border-border-primary focus:outline-none focus:ring-2 focus:ring-accent-highlight"
     >
       <div className="pointer-events-none absolute inset-0 opacity-0 transition group-hover:opacity-100 bg-gradient-to-r from-white/5 to-transparent" />
       <div className="relative p-5">
@@ -69,13 +74,18 @@ function ResourceCard({
 
         <div className="mt-4 flex items-center justify-between text-sm">
           <div className="text-foreground-secondary">
-            <span className="font-medium text-foreground-primary">{count}</span>{" "}
+            <span className={`font-medium ${accentClass}`}>{count}</span>{" "}
             {countLabel}
           </div>
 
           {Icon ? (
-            <div className="rounded-xl bg-background-muted p-2 transition group-hover:bg-background-main">
-              <Icon className="h-5 w-5 text-foreground-secondary" />
+            <div
+              className={[
+                "rounded-xl p-2 transition group-hover:bg-background-main",
+                accentBgClass,
+              ].join(" ")}
+            >
+              <Icon className={`h-5 w-5 ${accentClass}`} />
             </div>
           ) : null}
         </div>
@@ -112,24 +122,28 @@ export default async function WorldPage({ params }: PageProps) {
             value={counts.locations}
             href={`/worlds/${worldId}/locations`}
             Icon={MapPin}
+            accentClass="text-emerald-300"
           />
           <StatCard
             title="NPCs"
             value={counts.npcs}
             href={`/worlds/${worldId}/npcs`}
             Icon={Users}
+            accentClass="text-sky-300"
           />
           <StatCard
             title="Items"
             value={counts.items}
             href={`/worlds/${worldId}/items`}
             Icon={Package}
+            accentClass="text-fuchsia-300"
           />
           <StatCard
             title="Gods"
             value={counts.gods}
             href={`/worlds/${worldId}/gods`}
             Icon={Sparkles}
+            accentClass="text-amber-300"
           />
         </section>
 
@@ -141,6 +155,8 @@ export default async function WorldPage({ params }: PageProps) {
             count={counts.locations}
             countLabel="Locations"
             Icon={MapPin}
+            accentClass="text-emerald-300"
+            accentBgClass="bg-emerald-300/10"
           />
           <ResourceCard
             title="NPCs"
@@ -149,6 +165,8 @@ export default async function WorldPage({ params }: PageProps) {
             count={counts.npcs}
             countLabel="NPCs"
             Icon={Users}
+            accentClass="text-sky-300"
+            accentBgClass="bg-sky-300/10"
           />
           <ResourceCard
             title="Items"
@@ -157,6 +175,8 @@ export default async function WorldPage({ params }: PageProps) {
             count={counts.items}
             countLabel="Items"
             Icon={Package}
+            accentClass="text-fuchsia-300"
+            accentBgClass="bg-fuchsia-300/10"
           />
           <ResourceCard
             title="Gods"
@@ -165,6 +185,8 @@ export default async function WorldPage({ params }: PageProps) {
             count={counts.gods}
             countLabel="Gods"
             Icon={Sparkles}
+            accentClass="text-amber-300"
+            accentBgClass="bg-amber-300/10"
           />
         </section>
 
