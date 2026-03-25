@@ -98,10 +98,10 @@ Git-användning med repo på GitHub - [x]
 
 ## Slutrapport
 
-Skrivit slutrapport (2–3 sidor) - []
-Abstract på engelska - []
-Tech stack och motivering av val - []
-Dokumentation av arbetsprocess, planering och research - []
+Skrivit slutrapport (2–3 sidor) - [x]
+Abstract på engelska - [x]
+Tech stack och motivering av val - [x]
+Dokumentation av arbetsprocess, planering och research - [x]
 
 ## Deploy
 
@@ -117,11 +117,11 @@ Obruten navigation genom hela applikationen - [x]
 
 ## Grundkrav
 
-Uppfyller samtliga krav för Godkänt (G) - [ ]
+Uppfyller samtliga krav för Godkänt (G) - [x]
 
 ## Design och Prototyping
 
-Interaktiv prototyp som demonstrerar användarflöden - [x]
+Interaktiv prototyp som demonstrerar användarflöden - [ ]
 Prototypen är mycket lik den färdiga produkten - [x]
 Designen följer WCAG 2.1 nivå A och AA utan undantag - [x]
 
